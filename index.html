@@ -14,8 +14,8 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- شريط اللغات العلوي -->
-    <header class="bg-gray-900 border-b border-gray-800 py-2.5 px-4 flex justify-between items-center text-xs">
+    <!-- شريط اللغات العلوي (ثابت لا يختفي أبداً) -->
+    <header class="bg-gray-900 border-b border-gray-800 py-2.5 px-4 flex justify-between items-center text-xs sticky top-0 z-40">
         <div class="flex items-center gap-2 text-gray-400">
             <i class="fa-solid fa-scissors text-purple-400"></i>
             <span id="brand-name-top">Le Marquis Barbershop</span>
@@ -30,7 +30,7 @@
     <!-- المحتوى الرئيسي -->
     <main class="container mx-auto px-4 py-6 max-w-4xl flex-grow">
         
-        <!-- الترويسة والشعار المكبر -->
+        <!-- الترويسة والشعار -->
         <div class="text-center mb-8">
             <div class="w-24 h-24 mx-auto mb-3 bg-gray-900 border-2 border-purple-500 rounded-full flex items-center justify-center shadow-xl shadow-purple-900/20">
                 <i class="fa-solid fa-crown text-4xl text-purple-400"></i>
@@ -45,7 +45,7 @@
                 <a href="https://maps.google.com" target="_blank" class="w-10 h-10 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center hover:bg-blue-600 hover:text-white transition"><i class="fa-solid fa-location-dot"></i></a>
             </div>
 
-            <!-- أوقات العمل تحت أيقونات التواصل -->
+            <!-- أوقات العمل -->
             <div class="mt-3 inline-flex items-center gap-2 bg-gray-900/80 border border-gray-800 px-3.5 py-1.5 rounded-full text-xs text-purple-300 shadow-inner">
                 <i class="fa-solid fa-clock text-purple-400"></i>
                 <span id="working-hours-text">أوقات العمل: 10:00 صباحاً - 10:00 ليلاً</span>
@@ -54,33 +54,10 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- القسم الأيمن والوسط: الحلاقين، الخدمات، الأوقات -->
+            <!-- القسم الأيمن والوسط: الترتيب الجديد (الخدمات -> الوقت -> الحلاقين) -->
             <div class="lg:col-span-2 space-y-6">
                 
-                <!-- 1. اختيار الحلاقين -->
-                <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-4 shadow-md">
-                    <h2 id="staff-section-title" class="text-sm font-bold text-purple-400 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-user-tie"></i> اختر الحلاق المفضل (اختياري)
-                    </h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="staff-container">
-                        <div onclick="selectStaff('يوسف الاحترافي', this)" class="staff-card border border-gray-800 rounded-xl p-3 flex items-center gap-3 cursor-pointer transition hover:border-purple-500 bg-gray-950/40">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" class="w-12 h-12 rounded-full object-cover border border-purple-500">
-                            <div>
-                                <h3 class="text-sm font-bold text-white">يوسف الاحترافي</h3>
-                                <p class="text-[10px] text-gray-400">Classic & Scissors</p>
-                            </div>
-                        </div>
-                        <div onclick="selectStaff('أمين المعلم', this)" class="staff-card border border-gray-800 rounded-xl p-3 flex items-center gap-3 cursor-pointer transition hover:border-purple-500 bg-gray-950/40">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" class="w-12 h-12 rounded-full object-cover border border-purple-500">
-                            <div>
-                                <h3 class="text-sm font-bold text-white">أمين المعلم</h3>
-                                <p class="text-[10px] text-gray-400">Fade & Modern Master</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. اختيار الخدمات -->
+                <!-- 1. اختيار الخدمات أولاً -->
                 <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-4 shadow-md">
                     <h2 id="services-section-title" class="text-sm font-bold text-purple-400 mb-3 flex items-center gap-2">
                         <i class="fa-solid fa-list-check"></i> اختر الخدمات المطلوبة
@@ -121,45 +98,69 @@
                     </div>
                 </div>
 
-                <!-- 3. اختيار الوقت (كل نصف ساعة بدقة من 10 إلى 22) -->
+                <!-- 2. اختيار وقت الموعد ثانياً (كل توقيت لوحده بشكل دقيق ومنفصل) -->
                 <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-4 shadow-md">
                     <h2 id="time-section-title" class="text-sm font-bold text-purple-400 mb-3 flex items-center gap-2">
                         <i class="fa-solid fa-clock"></i> اختر وقت الموعد
                     </h2>
                     <select id="appointment-time" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-white focus:border-purple-500 outline-none">
                         <option value="" id="opt-default">-- اختر التوقيت المتاح --</option>
-                        <option value="10:00">10:00 - 10:30 صباحاً</option>
-                        <option value="10:30">10:30 - 11:00 صباحاً</option>
-                        <option value="11:00">11:00 - 11:30 صباحاً</option>
-                        <option value="11:30">11:30 - 12:00 ظهراً</option>
-                        <option value="12:00">12:00 - 12:30 ظهراً</option>
-                        <option value="12:30">12:30 - 01:00 ظهراً</option>
-                        <option value="13:00">01:00 - 01:30 ظهراً</option>
-                        <option value="13:30">01:30 - 02:00 ظهراً</option>
-                        <option value="14:00">02:00 - 02:30 زوالاً</option>
-                        <option value="14:30">02:30 - 03:00 زوالاً</option>
-                        <option value="15:00">03:00 - 03:30 عصراً</option>
-                        <option value="15:30">03:30 - 04:00 عصراً</option>
-                        <option value="16:00">04:00 - 04:30 عصراً</option>
-                        <option value="16:30">04:30 - 05:00 مساءً</option>
-                        <option value="17:00">05:00 - 05:30 مساءً</option>
-                        <option value="17:30">05:30 - 06:00 مساءً</option>
-                        <option value="18:00">06:00 - 06:30 مساءً</option>
-                        <option value="18:30">06:30 - 07:00 مساءً</option>
-                        <option value="19:00">07:00 - 07:30 ليلاً</option>
-                        <option value="19:30">07:30 - 08:00 ليلاً</option>
-                        <option value="20:00">08:00 - 08:30 ليلاً</option>
-                        <option value="20:30">08:30 - 09:00 ليلاً</option>
-                        <option value="21:00">09:00 - 09:30 ليلاً</option>
-                        <option value="21:30">09:30 - 10:00 ليلاً</option>
+                        <option value="10:00">10:00</option>
+                        <option value="10:30">10:30</option>
+                        <option value="11:00">11:00</option>
+                        <option value="11:30">11:30</option>
+                        <option value="12:00">12:00</option>
+                        <option value="12:30">12:30</option>
+                        <option value="13:00">13:00</option>
+                        <option value="13:30">13:30</option>
+                        <option value="14:00">14:00</option>
+                        <option value="14:30">14:30</option>
+                        <option value="15:00">15:00</option>
+                        <option value="15:30">15:30</option>
+                        <option value="16:00">16:00</option>
+                        <option value="16:30">16:30</option>
+                        <option value="17:00">17:00</option>
+                        <option value="17:30">17:30</option>
+                        <option value="18:00">18:00</option>
+                        <option value="18:30">18:30</option>
+                        <option value="19:00">19:00</option>
+                        <option value="19:30">19:30</option>
+                        <option value="20:00">20:00</option>
+                        <option value="20:30">20:30</option>
+                        <option value="21:00">21:00</option>
+                        <option value="21:30">21:30</option>
+                        <option value="22:00">22:00</option>
                     </select>
+                </div>
+
+                <!-- 3. اختيار الحلاقين ثالثاً -->
+                <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-4 shadow-md">
+                    <h2 id="staff-section-title" class="text-sm font-bold text-purple-400 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-user-tie"></i> اختر الحلاق المفضل (اختياري)
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="staff-container">
+                        <div onclick="selectStaff('يوسف الاحترافي', this)" class="staff-card border border-gray-800 rounded-xl p-3 flex items-center gap-3 cursor-pointer transition hover:border-purple-500 bg-gray-950/40">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" class="w-12 h-12 rounded-full object-cover border border-purple-500">
+                            <div>
+                                <h3 class="text-sm font-bold text-white">يوسف الاحترافي</h3>
+                                <p class="text-[10px] text-gray-400">Classic & Scissors</p>
+                            </div>
+                        </div>
+                        <div onclick="selectStaff('أمين المعلم', this)" class="staff-card border border-gray-800 rounded-xl p-3 flex items-center gap-3 cursor-pointer transition hover:border-purple-500 bg-gray-950/40">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" class="w-12 h-12 rounded-full object-cover border border-purple-500">
+                            <div>
+                                <h3 class="text-sm font-bold text-white">أمين المعلم</h3>
+                                <p class="text-[10px] text-gray-400">Fade & Modern Master</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
 
             <!-- القسم الأيسر: السلة الذكية -->
             <div>
-                <div class="bg-gradient-to-b from-gray-900 to-gray-950 border-2 border-purple-600/40 rounded-2xl p-4 shadow-2xl sticky top-4">
+                <div class="bg-gradient-to-b from-gray-900 to-gray-950 border-2 border-purple-600/40 rounded-2xl p-4 shadow-2xl sticky top-16">
                     <h2 id="cart-title" class="text-sm font-bold text-purple-300 mb-4 flex items-center gap-2 border-b border-gray-800 pb-2">
                         <i class="fa-solid fa-cart-shopping"></i> سلة الخدمات المختارة
                     </h2>
@@ -235,7 +236,7 @@
         </div>
     </div>
 
-    <!-- كود الجافاسكريبت -->
+    <!-- كود الجافاسكريبت المحدث والمستقر -->
     <script>
         let selectedStaffMember = "لم يتم التحديد";
         let currentLang = 'ar';
@@ -323,10 +324,10 @@
             document.getElementById('main-title').textContent = t.mainTitle;
             document.getElementById('sub-title').textContent = t.subTitle;
             document.getElementById('working-hours-text').textContent = t.workingHours;
-            document.getElementById('staff-section-title').innerHTML = `<i class="fa-solid fa-user-tie"></i> ${t.staffTitle}`;
             document.getElementById('services-section-title').innerHTML = `<i class="fa-solid fa-list-check"></i> ${t.servicesTitle}`;
             document.getElementById('time-section-title').innerHTML = `<i class="fa-solid fa-clock"></i> ${t.timeTitle}`;
             document.getElementById('opt-default').textContent = t.timeDefault;
+            document.getElementById('staff-section-title').innerHTML = `<i class="fa-solid fa-user-tie"></i> ${t.staffTitle}`;
             document.getElementById('cart-title').innerHTML = `<i class="fa-solid fa-cart-shopping"></i> ${t.cartTitle}`;
             document.getElementById('label-total-time').textContent = t.totalTime;
             document.getElementById('label-total-price').textContent = t.totalPrice;
