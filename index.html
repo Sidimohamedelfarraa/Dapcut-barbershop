@@ -15,7 +15,7 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- 1. شاشة تسجيل الدخول الذكية (نظيفة وخالية من التلميحات) -->
+    <!-- 1. شاشة تسجيل الدخول الذكية -->
     <div id="login-screen" class="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50">
         <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4">
             <div class="text-center">
@@ -121,19 +121,19 @@
                     <div id="bookings-container" class="space-y-3"></div>
                 </div>
 
-                <!-- 2. نقطة البيع (POS) المحدثة -->
+                <!-- 2. نقطة البيع (POS) -->
                 <div id="tab-pos" class="tab-content space-y-4">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <!-- أزرار الخدمات والمنتجات -->
-                        <div class="lg:col-span-2 space-y-3">
-                            <div class="bg-gray-900 p-4 rounded-2xl border border-gray-800 flex justify-between items-center">
-                                <h2 class="text-xs font-bold text-purple-400"><i class="fa-solid fa-cash-register"></i> نقطة البيع السريعة (POS)</h2>
-                                <span class="text-[10px] text-gray-400">اضغط للإضافة للسلة</span>
+                        <div class="lg:col-span-2 flex flex-col justify-between space-y-3">
+                            <div class="space-y-3">
+                                <div class="bg-gray-900 p-4 rounded-2xl border border-gray-800 flex justify-between items-center">
+                                    <h2 class="text-xs font-bold text-purple-400"><i class="fa-solid fa-cash-register"></i> نقطة البيع السريعة (POS)</h2>
+                                    <span class="text-[10px] text-gray-400">اضغط للإضافة للسلة</span>
+                                </div>
+                                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2" id="pos-grid-items"></div>
                             </div>
-                            <div class="grid grid-cols-3 sm:grid-cols-4 gap-2" id="pos-grid-items">
-                                <!-- يتم تعبئتها ديناميكياً من الخدمات والمنتجات -->
-                            </div>
-                            <!-- تقارير نقطة البيع الفورية -->
+                            
+                            <!-- تقارير نقطة البيع والمداخيل المسجلة في أسفل الصفحة -->
                             <div class="bg-gray-900 p-4 rounded-2xl border border-gray-800 space-y-2">
                                 <h3 class="text-xs font-bold text-white">تقرير اليوم المباشر</h3>
                                 <div class="flex gap-2">
@@ -147,7 +147,6 @@
                             </div>
                         </div>
 
-                        <!-- سلة المشتريات والدفع -->
                         <div class="bg-gray-900 p-4 rounded-2xl border border-gray-800 flex flex-col justify-between space-y-4">
                             <div>
                                 <h3 class="text-xs font-bold text-white mb-3 flex items-center gap-2"><i class="fa-solid fa-shopping-cart"></i> السلة الحالية</h3>
@@ -169,10 +168,10 @@
                     </div>
                 </div>
 
-                <!-- 3. زبون بدون موعد (Walk-in) بأزرار العمال والخدمات البصرية -->
+                <!-- 3. زبون بدون موعد -->
                 <div id="tab-walkin" class="tab-content space-y-4">
                     <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 space-y-4">
-                        <h2 class="text-sm font-bold text-purple-400"><i class="fa-solid fa-user-clock"></i> تسجيل زبون بدون موعد سريع</h2>
+                        <h2 class="text-sm font-bold text-purple-400"><i class="fa-solid fa-user-clock"></i> تسجيل زبون بدون موعد وتحديد التوقيت</h2>
                         
                         <div>
                             <label class="text-xs text-gray-400 block mb-2">اختر الخدمة المطلوبة:</label>
@@ -186,11 +185,16 @@
                             <input type="hidden" id="selected-walkin-staff">
                         </div>
 
-                        <button onclick="saveWalkin()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl text-xs transition">تسجيل الخدمة وإغلاق التوقيت فوراً</button>
+                        <div>
+                            <label class="text-xs text-gray-400 block mb-1">حدد التوقيت (الساعة) لإغلاق الموعد ومنع التداخل:</label>
+                            <input type="time" id="walkin-time" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-xs text-white outline-none">
+                        </div>
+
+                        <button onclick="saveWalkin()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl text-xs transition">تسجيل الزبون وحجز التوقيت فوراً</button>
                     </div>
                 </div>
 
-                <!-- 4. إدارة الخدمات (مع زر إضافة وسطر مرن) -->
+                <!-- 4. إدارة الخدمات (مع عناوين توضيحية فوق الخانات) -->
                 <div id="tab-services" class="tab-content space-y-4">
                     <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 space-y-4">
                         <div class="flex justify-between items-center">
@@ -199,11 +203,17 @@
                                 <i class="fa-solid fa-plus ml-1"></i> إضافة خدمة
                             </button>
                         </div>
+                        <!-- عناوين توضيحية -->
+                        <div class="hidden sm:grid grid-cols-12 gap-2 text-[11px] text-gray-400 px-3 font-bold">
+                            <div class="col-span-6">اسم الخدمة</div>
+                            <div class="col-span-3 text-center">المدة (دقيقة)</div>
+                            <div class="col-span-3 text-center">الثمن (درهم)</div>
+                        </div>
                         <div id="services-rows-container" class="space-y-3"></div>
                     </div>
                 </div>
 
-                <!-- 5. إدارة العمال (مع زر إضافة وسطر مرن واسم هو المعرف) -->
+                <!-- 5. إدارة العمال (مع رفع الصور وعناوين توضيحية) -->
                 <div id="tab-staff" class="tab-content space-y-4">
                     <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 space-y-4">
                         <div class="flex justify-between items-center">
@@ -212,16 +222,33 @@
                                 <i class="fa-solid fa-plus ml-1"></i> إضافة عامل
                             </button>
                         </div>
+                        <!-- عناوين توضيحية -->
+                        <div class="hidden sm:grid grid-cols-12 gap-2 text-[11px] text-gray-400 px-3 font-bold">
+                            <div class="col-span-2">الصورة</div>
+                            <div class="col-span-2">اسم العامل (ID)</div>
+                            <div class="col-span-1 text-center">الرمز (PIN)</div>
+                            <div class="col-span-2 text-center">بداية العمل</div>
+                            <div class="col-span-2 text-center">نهاية العمل</div>
+                            <div class="col-span-1 text-center">يوم الإجازة</div>
+                            <div class="col-span-2">الوظيفة / الاختصاص</div>
+                        </div>
                         <div id="staff-rows-container" class="space-y-3"></div>
                     </div>
                 </div>
 
-                <!-- 6. المنتجات والأرباح -->
+                <!-- 6. المنتجات والأرباح (مع عناوين توضيحية) -->
                 <div id="tab-products" class="tab-content space-y-4">
                     <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 space-y-4">
                         <div class="flex justify-between items-center">
                             <h2 class="text-sm font-bold text-purple-400"><i class="fa-solid fa-box-open"></i> إدارة منتجات المتجر وهامش الربح</h2>
                             <button onclick="addProductRow()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-plus ml-1"></i> إضافة منتج</button>
+                        </div>
+                        <!-- عناوين توضيحية -->
+                        <div class="hidden sm:grid grid-cols-12 gap-2 text-[11px] text-gray-400 px-3 font-bold">
+                            <div class="col-span-5">اسم المنتج</div>
+                            <div class="col-span-2 text-center">ثمن الشراء</div>
+                            <div class="col-span-2 text-center">ثمن البيع</div>
+                            <div class="col-span-3 text-center">الربح المحسوب</div>
                         </div>
                         <div id="products-rows-container" class="space-y-3"></div>
                     </div>
@@ -238,28 +265,64 @@
                     </div>
                 </div>
 
-                <!-- 8. تعديل واجهة الحجز الشاملة -->
+                <!-- 8. تعديل واجهة الحجز الشاملة (مع رفع الشعار وروابط التواصل مع أزرار تفعيل/تعطيل) -->
                 <div id="tab-ui-custom" class="tab-content space-y-4">
                     <div class="bg-gray-900 p-5 rounded-2xl border border-gray-800 space-y-4 text-xs">
-                        <h2 class="text-sm font-bold text-purple-400"><i class="fa-solid fa-paintbrush"></i> تحكم كامل في مظهر وشعار واجهة الزبون</h2>
+                        <h2 class="text-sm font-bold text-purple-400"><i class="fa-solid fa-paintbrush"></i> تحكم كامل في مظهر وشعار وروابط واجهة الزبون</h2>
+                        
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="text-gray-400 block mb-1">اسم الصالون</label>
                                 <input type="text" id="cfg-shop-name" value="Le Marquis Barbershop" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-white outline-none">
                             </div>
                             <div>
-                                <label class="text-gray-400 block mb-1">رابط الشعار (Logo URL)</label>
-                                <input type="text" id="cfg-logo" placeholder="رابط صورة الشعار" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-white outline-none">
+                                <label class="text-gray-400 block mb-1">تحميل شعار الصالون مباشرة (Logo)</label>
+                                <input type="file" id="cfg-logo-file" accept="image/*" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2 text-white outline-none text-[11px]">
                             </div>
                             <div>
-                                <label class="text-gray-400 block mb-1">رابط إنستغرام / وسائل التواصل</label>
-                                <input type="text" id="cfg-social" placeholder="رابط الصفحة" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-white outline-none">
-                            </div>
-                            <div>
-                                <label class="text-gray-400 block mb-1">أوقات العمل (فتح وإغلاق)</label>
+                                <label class="text-gray-400 block mb-1">أوقات العمل العامة</label>
                                 <input type="text" id="cfg-hours" value="10:00 - 22:00" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-white outline-none">
                             </div>
                         </div>
+
+                        <!-- روابط وسائل التواصل الاجتماعي مع مفاتيح تفعيل/تعطيل -->
+                        <div class="border-t border-gray-800 pt-3 space-y-3">
+                            <h3 class="text-white font-bold">روابط وسائل التواصل الاجتماعي وتفعيلها</h3>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center bg-gray-950 p-3 rounded-xl border border-gray-800">
+                                <div class="space-y-1">
+                                    <label class="text-[11px] text-gray-400">رابط إنستغرام (Instagram)</label>
+                                    <input type="text" id="social-ig" placeholder="https://instagram.com/..." class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white outline-none">
+                                </div>
+                                <div class="flex items-center justify-between sm:justify-start gap-4">
+                                    <span class="text-[11px] text-gray-300">تفعيل ظهور المنصة</span>
+                                    <input type="checkbox" id="social-ig-active" checked class="w-4 h-4 accent-purple-600 rounded">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center bg-gray-950 p-3 rounded-xl border border-gray-800">
+                                <div class="space-y-1">
+                                    <label class="text-[11px] text-gray-400">رابط فيسبوك (Facebook)</label>
+                                    <input type="text" id="social-fb" placeholder="https://facebook.com/..." class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white outline-none">
+                                </div>
+                                <div class="flex items-center justify-between sm:justify-start gap-4">
+                                    <span class="text-[11px] text-gray-300">تفعيل ظهور المنصة</span>
+                                    <input type="checkbox" id="social-fb-active" checked class="w-4 h-4 accent-purple-600 rounded">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center bg-gray-950 p-3 rounded-xl border border-gray-800">
+                                <div class="space-y-1">
+                                    <label class="text-[11px] text-gray-400">رابط تيك توك (TikTok)</label>
+                                    <input type="text" id="social-tk" placeholder="https://tiktok.com/..." class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white outline-none">
+                                </div>
+                                <div class="flex items-center justify-between sm:justify-start gap-4">
+                                    <span class="text-[11px] text-gray-300">تفعيل ظهور المنصة</span>
+                                    <input type="checkbox" id="social-tk-active" checked class="w-4 h-4 accent-purple-600 rounded">
+                                </div>
+                            </div>
+                        </div>
+
                         <button onclick="saveUIConfig()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-4 rounded-xl transition">حفظ إعدادات الواجهة</button>
                     </div>
                 </div>
@@ -312,7 +375,6 @@
 
     <!-- جافاسكريبت للنظام الشامل والمتزامن -->
     <script>
-        // الذاكرة المحلية الافتراضية
         let services = JSON.parse(localStorage.getItem('marquis_services')) || [
             { name: "قص شعر كلاسيكي", duration: "30", price: 50, hidden: false },
             { name: "حلاقة لحية", duration: "20", price: 30, hidden: false },
@@ -320,8 +382,8 @@
         ];
 
         let staffList = JSON.parse(localStorage.getItem('marquis_staff')) || [
-            { name: "يوسف", pin: "11", time: "10:00 - 20:00", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100", spec: "قص شعر وتدريج", hidden: false },
-            { name: "أمين", pin: "22", time: "12:00 - 22:00", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100", spec: "لحية وعناية", hidden: false }
+            { name: "يوسف", pin: "11", startTime: "10:00", endTime: "20:00", offDay: "الثلاثاء", img: "", spec: "قص شعر وتدريج", hidden: false },
+            { name: "أمين", pin: "22", startTime: "12:00", endTime: "22:00", offDay: "الأربعاء", img: "", spec: "لحية وعناية", hidden: false }
         ];
 
         let products = JSON.parse(localStorage.getItem('marquis_products')) || [
@@ -332,7 +394,6 @@
         let posCart = [];
         let salesHistory = JSON.parse(localStorage.getItem('marquis_sales')) || [];
 
-        // تسجيل الدخول
         function handleLogin() {
             const id = document.getElementById('login-id').value.trim();
             const pin = document.getElementById('login-pin').value.trim();
@@ -388,7 +449,6 @@
             updateTotalRevenue();
         }
 
-        // الحجوزات
         function loadBookingsData() {
             let bookings = JSON.parse(localStorage.getItem('marquis_bookings')) || [
                 { name: "محمد العلوي", phone: "612345678", services: "قص شعر + لحية", time: "12:00", staff: "يوسف", price: 80 }
@@ -406,12 +466,12 @@
             bookings.forEach((b, index) => {
                 html += `<div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs">
                     <div>
-                        <span class="text-white font-bold text-sm block mb-1">${b.name} (${b.phone})</span>
+                        <span class="text-white font-bold text-sm block mb-1">${b.name} (${b.phone || 'بدون رقم'})</span>
                         <span class="text-gray-400 block">الخدمات: ${b.services} | الحلاق: <strong class="text-purple-300">${b.staff}</strong></span>
                         <span class="text-green-400 font-bold mt-1 inline-block">⏰ التوقيت: ${b.time} | السعر: ${b.price} DH</span>
                     </div>
                     <div class="flex flex-wrap gap-1.5">
-                        <a href="https://wa.me/212${b.phone}?text=مرحباً%20${b.name}،%20تم%20قبول%20حجزك%20في%20Le%20Marquis%20على%20الساعة%20${b.time}" target="_blank" class="bg-green-600/20 text-green-400 px-3.5 py-1.5 rounded-xl font-bold hover:bg-green-600 hover:text-white transition">قبول (واتساب)</a>
+                        ${b.phone ? `<a href="https://wa.me/212${b.phone}?text=مرحباً%20${b.name}،%20تم%20قبول%20حجزك" target="_blank" class="bg-green-600/20 text-green-400 px-3.5 py-1.5 rounded-xl font-bold hover:bg-green-600 hover:text-white transition">واتساب</a>` : ''}
                         <button onclick="bookingAction(${index}, 'رفض')" class="bg-yellow-600/20 text-yellow-400 px-3.5 py-1.5 rounded-xl font-bold hover:bg-yellow-600 hover:text-white transition">رفض</button>
                         <button onclick="bookingAction(${index}, 'غياب')" class="bg-red-600/20 text-red-400 px-3.5 py-1.5 rounded-xl font-bold hover:bg-red-600 hover:text-white transition">غياب</button>
                         <button onclick="bookingAction(${index}, 'حضور')" class="bg-blue-600/20 text-blue-400 px-3.5 py-1.5 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition">حضور</button>
@@ -435,7 +495,6 @@
             alert(`✅ تم تحديث الحالة إلى: ${action}`);
         }
 
-        // نقطة البيع (POS)
         function renderPOS() {
             let grid = document.getElementById('pos-grid-items');
             let html = '';
@@ -499,7 +558,7 @@
             if(withReceipt) {
                 alert(`🖨️ جاري طباعة الإصال الحراري... (المجموع: ${total} درهم)`);
             } else {
-                alert(`✅ تم إتمام الدفع بنجاح (بدون إيصال).`);
+                alert(`✅ تم إتمام الدفع بنجاح.`);
             }
             posCart = [];
             renderPOSCart();
@@ -516,11 +575,10 @@
             document.getElementById('pos-daily-total').textContent = total + ' درهم';
         }
 
-        // زبون بدون موعد (Walk-in)
         function renderWalkinOptions() {
             let sGrid = document.getElementById('walkin-services-grid');
             let sHtml = '';
-            services.filter(s => !s.hidden).forEach((s, idx) => {
+            services.filter(s => !s.hidden).forEach((s) => {
                 sHtml += `<button onclick="selectWalkinService('${s.name}', this)" class="walkin-s-btn bg-gray-950 border border-gray-800 p-2.5 rounded-xl text-center text-xs text-white transition">
                     <span class="block font-bold">${s.name}</span>
                     <span class="text-purple-400 text-[10px]">${s.price} DH</span>
@@ -530,7 +588,7 @@
 
             let stGrid = document.getElementById('walkin-staff-grid');
             let stHtml = '';
-            staffList.filter(st => !st.hidden).forEach((st, idx) => {
+            staffList.filter(st => !st.hidden).forEach((st) => {
                 stHtml += `<button onclick="selectWalkinStaff('${st.name}', this)" class="walkin-st-btn bg-gray-950 border border-gray-800 p-2.5 rounded-xl text-center text-xs text-white transition flex flex-col items-center gap-1">
                     <img src="${st.img || 'https://via.placeholder.com/40'}" class="w-8 h-8 rounded-full object-cover border border-purple-500">
                     <span class="font-bold">${st.name}</span>
@@ -554,26 +612,40 @@
         function saveWalkin() {
             let service = document.getElementById('selected-walkin-service').value;
             let staff = document.getElementById('selected-walkin-staff').value;
-            if(!service || !staff) { alert('الرجاء اختيار الخدمة والعامل أولاً.'); return; }
+            let time = document.getElementById('walkin-time').value;
+
+            if(!service || !staff || !time) { 
+                alert('الرجاء اختيار الخدمة، الحلاق، وتحديد التوقيت بدقة.'); 
+                return; 
+            }
+
             let sObj = services.find(s => s.name === service);
-            salesHistory.push({ name: "بدون موعد (" + service + ")", total: sObj ? sObj.price : 50, staff: staff, date: new Date().toLocaleDateString() });
+            let price = sObj ? sObj.price : 50;
+
+            let bookings = JSON.parse(localStorage.getItem('marquis_bookings')) || [];
+            bookings.push({ name: "زبون (بدون موعد)", phone: "", services: service, time: time, staff: staff, price: price });
+            localStorage.setItem('marquis_bookings', JSON.stringify(bookings));
+
+            salesHistory.push({ name: "بدون موعد (" + service + ")", total: price, staff: staff, date: new Date().toLocaleDateString() });
             localStorage.setItem('marquis_sales', JSON.stringify(salesHistory));
+
+            loadBookingsData();
             updateTotalRevenue();
-            alert(`✅ تم تسجيل الزبون بدون موعد مع الحلاق (${staff}) للخدمة (${service}) بنجاح.`);
+            alert(`✅ تم تسجيل الزبون مع الحلاق (${staff}) على الساعة (${time}) وإغلاق التوقيت في النظام بنجاح.`);
         }
 
-        // إدارة الخدمات (أسطر مرنة وزر إضافة)
+        // إدارة الخدمات مع العناوين التوضيحية
         function renderServicesRows() {
             let container = document.getElementById('services-rows-container');
             let html = '';
             services.forEach((s, idx) => {
-                html += `<div class="flex flex-col sm:flex-row gap-2 items-center bg-gray-950 p-3 rounded-xl border border-gray-800 text-xs">
-                    <input type="text" value="${s.name}" id="srv-name-${idx}" class="bg-gray-900 border border-gray-800 rounded-lg p-2 text-white flex-grow outline-none">
-                    <input type="number" value="${s.duration}" id="srv-dur-${idx}" placeholder="المدة (د)" class="w-20 bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none">
-                    <input type="number" value="${s.price}" id="srv-price-${idx}" placeholder="السعر" class="w-20 bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none">
-                    <div class="flex gap-1.5">
-                        <button onclick="saveService(${idx})" class="bg-green-600/20 text-green-400 px-3 py-2 rounded-lg font-bold hover:bg-green-600 hover:text-white transition">حفظ</button>
-                        <button onclick="toggleService(${idx})" class="bg-yellow-600/20 text-yellow-400 px-3 py-2 rounded-lg font-bold hover:bg-yellow-600 hover:text-white transition">${s.hidden ? 'إظهار' : 'إخفاء'}</button>
+                html += `<div class="grid grid-cols-12 gap-2 items-center bg-gray-950 p-3 rounded-xl border border-gray-800 text-xs">
+                    <div class="col-span-6"><input type="text" value="${s.name}" id="srv-name-${idx}" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white outline-none" placeholder="اسم الخدمة"></div>
+                    <div class="col-span-3"><input type="number" value="${s.duration}" id="srv-dur-${idx}" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none" placeholder="المدة"></div>
+                    <div class="col-span-3 flex gap-1 items-center">
+                        <input type="number" value="${s.price}" id="srv-price-${idx}" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none" placeholder="الثمن">
+                        <button onclick="saveService(${idx})" class="bg-green-600/20 text-green-400 px-2.5 py-2 rounded-lg font-bold hover:bg-green-600 hover:text-white transition" title="حفظ"><i class="fa-solid fa-check"></i></button>
+                        <button onclick="toggleService(${idx})" class="bg-yellow-600/20 text-yellow-400 px-2.5 py-2 rounded-lg font-bold hover:bg-yellow-600 hover:text-white transition" title="إخفاء/إظهار"><i class="fa-solid fa-eye-slash"></i></button>
                     </div>
                 </div>`;
             });
@@ -600,27 +672,45 @@
             renderServicesRows();
         }
 
-        // إدارة العمال (أسطر مرنة وزر إضافة)
+        // إدارة العمال مع تحميل الصور وجميع التفاصيل
         function renderStaffRows() {
             let container = document.getElementById('staff-rows-container');
             let html = '';
             staffList.forEach((st, idx) => {
-                html += `<div class="flex flex-col sm:flex-row gap-2 items-center bg-gray-950 p-3 rounded-xl border border-gray-800 text-xs">
-                    <input type="text" value="${st.name}" id="st-name-${idx}" placeholder="اسم العامل (ID)" class="bg-gray-900 border border-gray-800 rounded-lg p-2 text-white flex-grow outline-none">
-                    <input type="text" value="${st.pin}" id="st-pin-${idx}" placeholder="رمز (رقمين)" maxlength="2" class="w-20 bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none">
-                    <input type="text" value="${st.time || ''}" id="st-time-${idx}" placeholder="التوقيت" class="w-28 bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none">
-                    <input type="text" value="${st.spec || ''}" id="st-spec-${idx}" placeholder="المجال" class="w-32 bg-gray-900 border border-gray-800 rounded-lg p-2 text-white outline-none">
-                    <div class="flex gap-1.5">
-                        <button onclick="saveStaff(${idx})" class="bg-green-600/20 text-green-400 px-3 py-2 rounded-lg font-bold hover:bg-green-600 hover:text-white transition">حفظ</button>
-                        <button onclick="toggleStaff(${idx})" class="bg-yellow-600/20 text-yellow-400 px-3 py-2 rounded-lg font-bold hover:bg-yellow-600 hover:text-white transition">${st.hidden ? 'إظهار' : 'إخفاء'}</button>
+                html += `<div class="grid grid-cols-12 gap-2 items-center bg-gray-950 p-3 rounded-xl border border-gray-800 text-xs">
+                    <div class="col-span-2 flex items-center gap-2">
+                        <img src="${st.img || 'https://via.placeholder.com/30'}" class="w-8 h-8 rounded-full object-cover border border-purple-500" id="st-img-prev-${idx}">
+                        <input type="file" accept="image/*" onchange="handleStaffImage(event, ${idx})" class="text-[9px] text-gray-400 w-16">
+                    </div>
+                    <div class="col-span-2"><input type="text" value="${st.name}" id="st-name-${idx}" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white outline-none" placeholder="الاسم"></div>
+                    <div class="col-span-1"><input type="text" value="${st.pin}" id="st-pin-${idx}" maxlength="2" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none" placeholder="PIN"></div>
+                    <div class="col-span-2"><input type="time" value="${st.startTime || '10:00'}" id="st-start-${idx}" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none"></div>
+                    <div class="col-span-2"><input type="time" value="${st.endTime || '22:00'}" id="st-end-${idx}" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none"></div>
+                    <div class="col-span-1"><input type="text" value="${st.offDay || 'الإثنين'}" id="st-off-${idx}" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none" placeholder="إجازة"></div>
+                    <div class="col-span-2 flex gap-1 items-center">
+                        <input type="text" value="${st.spec || ''}" id="st-spec-${idx}" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white outline-none" placeholder="الوظيفة">
+                        <button onclick="saveStaff(${idx})" class="bg-green-600/20 text-green-400 px-2 py-2 rounded-lg font-bold hover:bg-green-600 hover:text-white transition" title="حفظ"><i class="fa-solid fa-check"></i></button>
+                        <button onclick="toggleStaff(${idx})" class="bg-yellow-600/20 text-yellow-400 px-2 py-2 rounded-lg font-bold hover:bg-yellow-600 hover:text-white transition" title="إخفاء/إظهار"><i class="fa-solid fa-eye-slash"></i></button>
                     </div>
                 </div>`;
             });
             container.innerHTML = html;
         }
 
+        function handleStaffImage(event, idx) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    staffList[idx].img = e.target.result;
+                    document.getElementById(`st-img-prev-${idx}`).src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
         function addStaffRow() {
-            staffList.push({ name: "عامل جديد", pin: "00", time: "10:00 - 20:00", spec: "حلاق", hidden: false });
+            staffList.push({ name: "عامل جديد", pin: "00", startTime: "10:00", endTime: "22:00", offDay: "الإثنين", img: "", spec: "حلاق", hidden: false });
             localStorage.setItem('marquis_staff', JSON.stringify(staffList));
             renderStaffRows();
         }
@@ -628,7 +718,9 @@
         function saveStaff(idx) {
             staffList[idx].name = document.getElementById(`st-name-${idx}`).value;
             staffList[idx].pin = document.getElementById(`st-pin-${idx}`).value;
-            staffList[idx].time = document.getElementById(`st-time-${idx}`).value;
+            staffList[idx].startTime = document.getElementById(`st-start-${idx}`).value;
+            staffList[idx].endTime = document.getElementById(`st-end-${idx}`).value;
+            staffList[idx].offDay = document.getElementById(`st-off-${idx}`).value;
             staffList[idx].spec = document.getElementById(`st-spec-${idx}`).value;
             localStorage.setItem('marquis_staff', JSON.stringify(staffList));
             alert('✅ تم حفظ بيانات العامل بنجاح.');
@@ -640,18 +732,20 @@
             renderStaffRows();
         }
 
-        // المنتجات والأرباح
+        // إدارة المنتجات والأرباح مع العناوين التوضيحية
         function renderProductsRows() {
             let container = document.getElementById('products-rows-container');
             let html = '';
             products.forEach((p, idx) => {
                 let profit = p.sell - p.buy;
-                html += `<div class="flex flex-col sm:flex-row gap-2 items-center bg-gray-950 p-3 rounded-xl border border-gray-800 text-xs">
-                    <input type="text" value="${p.name}" id="prod-name-${idx}" class="bg-gray-900 border border-gray-800 rounded-lg p-2 text-white flex-grow outline-none">
-                    <input type="number" value="${p.buy}" id="prod-buy-${idx}" placeholder="ثمن الشراء" class="w-24 bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none">
-                    <input type="number" value="${p.sell}" id="prod-sell-${idx}" placeholder="ثمن البيع" class="w-24 bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none">
-                    <span class="text-green-400 font-bold px-2">الربح: ${profit} DH</span>
-                    <button onclick="saveProduct(${idx})" class="bg-green-600/20 text-green-400 px-3 py-2 rounded-lg font-bold hover:bg-green-600 hover:text-white transition">حفظ</button>
+                html += `<div class="grid grid-cols-12 gap-2 items-center bg-gray-950 p-3 rounded-xl border border-gray-800 text-xs">
+                    <div class="col-span-5"><input type="text" value="${p.name}" id="prod-name-${idx}" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white outline-none" placeholder="اسم المنتج"></div>
+                    <div class="col-span-2"><input type="number" value="${p.buy}" id="prod-buy-${idx}" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none" placeholder="شراء"></div>
+                    <div class="col-span-2"><input type="number" value="${p.sell}" id="prod-sell-${idx}" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none" placeholder="بيع"></div>
+                    <div class="col-span-3 flex justify-between items-center bg-gray-900 px-3 py-2 rounded-lg border border-gray-800">
+                        <span class="text-green-400 font-bold">${profit} DH</span>
+                        <button onclick="saveProduct(${idx})" class="bg-green-600/20 text-green-400 px-2.5 py-1.5 rounded-lg font-bold hover:bg-green-600 hover:text-white transition">حفظ</button>
+                    </div>
                 </div>`;
             });
             container.innerHTML = html;
@@ -672,14 +766,13 @@
             alert('✅ تم حفظ المنتج وحساب هامش الربح.');
         }
 
-        // المشتريات
         function renderPurchasesRows() {
             let container = document.getElementById('purchases-rows-container');
             let html = '';
             purchases.forEach((pr, idx) => {
                 html += `<div class="flex gap-2 items-center bg-gray-950 p-3 rounded-xl border border-gray-800 text-xs">
-                    <input type="text" value="${pr.name}" class="bg-gray-900 border border-gray-800 rounded-lg p-2 text-white flex-grow outline-none">
-                    <input type="number" value="${pr.cost}" class="w-24 bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none">
+                    <input type="text" value="${pr.name}" class="bg-gray-900 border border-gray-800 rounded-lg p-2 text-white flex-grow outline-none" placeholder="اسم المصروف">
+                    <input type="number" value="${pr.cost}" class="w-24 bg-gray-900 border border-gray-800 rounded-lg p-2 text-white text-center outline-none" placeholder="التكلفة">
                 </div>`;
             });
             container.innerHTML = html;
@@ -691,7 +784,7 @@
         }
 
         function saveUIConfig() {
-            alert('✅ تم حفظ إعدادات الواجهة وتحديث مظهر الزبون بنجاح.');
+            alert('✅ تم حفظ إعدادات الواجهة وشعار الصالون وروابط التواصل الاجتماعي بنجاح.');
         }
 
         function updateTotalRevenue() {
