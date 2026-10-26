@@ -3,725 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dapcut Barbershop - نظام الإدارة</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Le Marquis Barbershop - الحجز الذكي</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @media print {
-            body * { visibility: hidden; }
-            #printable-receipt, #printable-receipt * { visibility: visible; }
-            #printable-receipt { position: absolute; left: 0; top: 0; width: 100%; }
-        }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
+        body { font-family: 'Tajawal', sans-serif; background-color: #0f1117; color: #f3f4f6; }
+        .selected-card { border-color: #8b5cf6 !important; background-color: rgba(139, 92, 246, 0.1) !important; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
+<body class="min-h-screen flex flex-col justify-between">
 
-    <!-- شاشة التوجيه الرئيسية -->
-    <div id="main-portal" class="flex flex-col items-center justify-center min-h-screen p-4">
-        <div class="bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-2xl max-w-md w-full text-center">
-            <h1 class="text-3xl font-bold mb-2 text-amber-400">✂️ Dapcut Barbershop</h1>
-            <p class="text-slate-400 mb-8">نظام الإدارة والحجوزات الذكي</p>
+    <!-- شريط اللغات العلوي -->
+    <header class="bg-gray-900 border-b border-gray-800 py-2 px-4 flex justify-between items-center text-xs">
+        <div class="flex items-center gap-2 text-gray-400">
+            <i class="fa-solid fa-scissors text-purple-400"></i>
+            <span>Le Marquis Barbershop</span>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="changeLang('ar')" class="px-2 py-1 bg-purple-600 text-white rounded font-bold">AR</button>
+            <button onclick="changeLang('fr')" class="px-2 py-1 bg-gray-800 text-gray-300 rounded hover:bg-gray-700">FR</button>
+            <button onclick="changeLang('en')" class="px-2 py-1 bg-gray-800 text-gray-300 rounded hover:bg-gray-700">EN</button>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي لواجهة الزبون -->
+    <main class="container mx-auto px-4 py-6 max-w-4xl flex-grow">
+        
+        <!-- الترويسة ومعلومات الصالون -->
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 mx-auto mb-3 bg-gray-800 border-2 border-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                <i class="fa-solid fa-crown text-3xl text-purple-400"></i>
+            </div>
+            <h1 id="shop-title" class="text-2xl md:text-3xl font-black tracking-wide text-white">صالون الحلاقة الراقي</h1>
+            <p class="text-xs text-gray-400 mt-1">Le Marquis Barbershop - Gentleman Only</p>
             
-            <div class="space-y-4">
-                <button onclick="showScreen('client-booking')" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold p-4 rounded-xl transition shadow-lg">
-                    📅 واجهة حجز الزبون
-                </button>
-                <button onclick="checkAdminAuth()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold p-4 rounded-xl transition">
-                    🔑 لوحة تحكم المدير (Admin)
-                </button>
-                <button onclick="showScreen('staff-login')" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold p-4 rounded-xl transition">
-                    👨‍💼 بوابة العمال (Abdrahmane, Ayoub, Simo)
-                </button>
-                <button onclick="showScreen('pos-screen')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-4 rounded-xl transition shadow-lg">
-                    💳 نقطة البيع (POS & Walk-in)
-                </button>
+            <!-- أيقونات التواصل الاجتماعي -->
+            <div class="flex justify-center gap-4 mt-4 text-lg">
+                <a href="https://wa.me/212600000000" target="_blank" class="w-10 h-10 rounded-full bg-green-600/20 text-green-400 flex items-center justify-center hover:bg-green-600 hover:text-white transition"><i class="fa-brands fa-whatsapp"></i></a>
+                <a href="https://instagram.com" target="_blank" class="w-10 h-10 rounded-full bg-pink-600/20 text-pink-400 flex items-center justify-center hover:bg-pink-600 hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://maps.google.com" target="_blank" class="w-10 h-10 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center hover:bg-blue-600 hover:text-white transition"><i class="fa-solid fa-location-dot"></i></a>
             </div>
         </div>
-    </div>
 
-    <!-- 1. واجهة حجز الزبون -->
-    <div id="client-booking" class="hidden min-h-screen p-4 max-w-xl mx-auto">
-        <button onclick="showScreen('main-portal')" class="mb-4 text-amber-400 hover:underline">← الرئيسية</button>
-        <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl">
-            <h2 class="text-2xl font-bold mb-4 text-amber-400">حجز موعد جديد</h2>
-            <form id="booking-form" onsubmit="submitBooking(event)" class="space-y-4">
-                <div>
-                    <label class="block text-sm text-slate-300 mb-1">اسم الزبون</label>
-                    <input type="text" id="client-name" required class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white focus:outline-none focus:border-amber-400">
-                </div>
-                <div>
-                    <label class="block text-sm text-slate-300 mb-1">رقم الهاتف (واتساب)</label>
-                    <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl overflow-hidden">
-                        <span class="bg-slate-800 px-3 py-3 text-slate-400 border-l border-slate-700 select-none">+212</span>
-                        <input type="tel" id="client-phone" placeholder="6XXXXXXXX" maxlength="9" required class="w-full bg-transparent p-3 text-white focus:outline-none">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- القسم الأيمن والوسط: الخدمات والحلاقين -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- 1. اختيار الحلاقين -->
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-md">
+                    <h2 class="text-sm font-bold text-purple-400 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-user-tie"></i> اختر الحلاق المفضل (اختياري)
+                    </h2>
+                    <div class="grid grid-cols-2 gap-3" id="staff-container">
+                        <!-- الحلاق الأول -->
+                        <div onclick="selectStaff('يوسف الاحترافي', this)" class="staff-card border border-gray-800 rounded-xl p-3 flex items-center gap-3 cursor-pointer transition hover:border-purple-500 bg-gray-950/40">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" class="w-12 h-12 rounded-full object-cover border border-purple-500">
+                            <div>
+                                <h3 class="text-sm font-bold text-white">يوسف الاحترافي</h3>
+                                <p class="text-[10px] text-gray-400">Classic & Scissors</p>
+                            </div>
+                        </div>
+                        <!-- الحلاق الثاني -->
+                        <div onclick="selectStaff('أمين المعلم', this)" class="staff-card border border-gray-800 rounded-xl p-3 flex items-center gap-3 cursor-pointer transition hover:border-purple-500 bg-gray-950/40">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" class="w-12 h-12 rounded-full object-cover border border-purple-500">
+                            <div>
+                                <h3 class="text-sm font-bold text-white">أمين المعلم</h3>
+                                <p class="text-[10px] text-gray-400">Fade & Modern Master</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm text-slate-300 mb-1">اختر الخدمة</label>
-                    <select id="booking-service" required class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white focus:outline-none focus:border-amber-400"></select>
+
+                <!-- 2. اختيار الخدمات -->
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-md">
+                    <h2 class="text-sm font-bold text-purple-400 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check"></i> اختر الخدمات المطلوبة
+                    </h2>
+                    <div class="space-y-2.5" id="services-container">
+                        <label class="service-item border border-gray-800 rounded-xl p-3 flex items-center justify-between cursor-pointer transition bg-gray-950/40 hover:border-purple-500 flex-row-reverse">
+                            <input type="checkbox" value="قص شعر (Haircut)" data-price="50" data-time="30" onchange="updateCart()" class="w-4 h-4 accent-purple-600 rounded">
+                            <div class="text-right">
+                                <span class="text-sm font-bold text-white block">قص شعر (Haircut)</span>
+                                <span class="text-xs text-gray-400">30 دقيقة</span>
+                            </div>
+                            <span class="text-purple-400 font-bold text-sm">50 درهم</span>
+                        </label>
+
+                        <label class="service-item border border-gray-800 rounded-xl p-3 flex items-center justify-between cursor-pointer transition bg-gray-950/40 hover:border-purple-500 flex-row-reverse">
+                            <input type="checkbox" value="حلاقة لحية (Beard)" data-price="30" data-time="20" onchange="updateCart()" class="w-4 h-4 accent-purple-600 rounded">
+                            <div class="text-right">
+                                <span class="text-sm font-bold text-white block">حلاقة لحية (Beard)</span>
+                                <span class="text-xs text-gray-400">20 دقيقة</span>
+                            </div>
+                            <span class="text-purple-400 font-bold text-sm">30 درهم</span>
+                        </label>
+
+                        <label class="service-item border border-gray-800 rounded-xl p-3 flex items-center justify-between cursor-pointer transition bg-gray-950/40 hover:border-purple-500 flex-row-reverse">
+                            <input type="checkbox" value="باك كامل (Hair + Beard)" data-price="70" data-time="45" onchange="updateCart()" class="w-4 h-4 accent-purple-600 rounded">
+                            <div class="text-right">
+                                <span class="text-sm font-bold text-white block">باك كامل (Hair + Beard)</span>
+                                <span class="text-xs text-gray-400">45 دقيقة</span>
+                            </div>
+                            <span class="text-purple-400 font-bold text-sm">70 درهم</span>
+                        </label>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm text-slate-300 mb-1">اختر الحلاق</label>
-                    <select id="booking-staff" required class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white focus:outline-none focus:border-amber-400"></select>
-                </div>
-                <div>
-                    <label class="block text-sm text-slate-300 mb-1">وقت الموعد (فواصل نصف ساعة)</label>
-                    <select id="booking-time" required class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white focus:outline-none focus:border-amber-400">
-                        <option value="10:00">10:00</option>
-                        <option value="10:30">10:30</option>
-                        <option value="11:00">11:00</option>
-                        <option value="11:30">11:30</option>
-                        <option value="12:00">12:00</option>
-                        <option value="12:30">12:30</option>
-                        <option value="13:00">13:00</option>
-                        <option value="13:30">13:30</option>
-                        <option value="14:00">14:00</option>
-                        <option value="14:30">14:30</option>
-                        <option value="15:00">15:00</option>
-                        <option value="15:30">15:30</option>
-                        <option value="16:00">16:00</option>
-                        <option value="16:30">16:30</option>
-                        <option value="17:00">17:00</option>
-                        <option value="17:30">17:30</option>
-                        <option value="18:00">18:00</option>
-                        <option value="18:30">18:30</option>
-                        <option value="19:00">19:00</option>
-                        <option value="19:30">19:30</option>
-                        <option value="20:00">20:00</option>
-                        <option value="20:30">20:30</option>
-                        <option value="21:00">21:00</option>
-                        <option value="21:30">21:30</option>
-                        <option value="22:00">22:00</option>
+
+                <!-- 3. اختيار الوقت -->
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-md">
+                    <h2 class="text-sm font-bold text-purple-400 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-clock"></i> اختر وقت الموعد
+                    </h2>
+                    <select id="appointment-time" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-white focus:border-purple-500 outline-none">
+                        <option value="">-- اختر التوقيت المتاح --</option>
+                        <option value="12:00">12:00 - 12:30 ظهراً</option>
+                        <option value="12:30">12:30 - 01:00 ظهراً</option>
+                        <option value="13:00">01:00 - 01:30 ظهراً</option>
+                        <option value="14:00">02:00 - 02:30 زوالاً</option>
+                        <option value="14:30">02:30 - 03:00 زوالاً</option>
+                        <option value="15:00">03:00 - 03:30 عصراً</option>
+                        <option value="16:00">04:00 - 04:30 عصراً</option>
+                        <option value="17:00">05:00 - 05:30 مساءً</option>
+                        <option value="18:00">06:00 - 06:30 مساءً</option>
+                        <option value="19:00">07:00 - 07:30 ليلاً</option>
+                        <option value="20:00">08:00 - 08:30 ليلاً</option>
+                        <option value="21:00">09:00 - 09:30 ليلاً</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold p-3 rounded-xl transition">تأكيد الحجز</button>
-            </form>
-        </div>
-    </div>
 
-    <!-- نافذة دخول المدير -->
-    <div id="admin-login-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl max-w-sm w-full text-center">
-            <h3 class="text-xl font-bold mb-4 text-amber-400" id="admin-pin-title">دخول المدير</h3>
-            <p class="text-sm text-slate-400 mb-4" id="admin-pin-desc">أدخل رمز الدخول المكون من 4 أرقام</p>
-            <input type="password" id="admin-pin-input" maxlength="4" class="w-full bg-slate-900 border border-slate-700 text-center text-2xl tracking-widest p-3 rounded-xl mb-4 text-white focus:outline-none">
-            <div class="flex gap-2">
-                <button onclick="verifyAdminPin()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold p-3 rounded-xl">دخول</button>
-                <button onclick="showScreen('main-portal')" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white p-3 rounded-xl">إلغاء</button>
             </div>
-        </div>
-    </div>
 
-    <!-- 2. لوحة تحكم المدير -->
-    <div id="admin-dashboard" class="hidden min-h-screen p-4 max-w-6xl mx-auto">
-        <div class="flex justify-between items-center mb-6 bg-slate-800 p-4 rounded-2xl border border-slate-700">
-            <h2 class="text-2xl font-bold text-amber-400">👑 لوحة تحكم المدير</h2>
-            <button onclick="showScreen('main-portal')" class="bg-slate-700 px-4 py-2 rounded-xl text-sm hover:bg-slate-600">تسجيل خروج</button>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                <h3 class="text-xl font-bold mb-4 text-amber-400">إدارة الخدمات</h3>
-                <div class="space-y-3 mb-4">
-                    <input type="text" id="new-service-name" placeholder="اسم الخدمة" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
-                    <div class="flex gap-2">
-                        <input type="number" id="new-service-price" placeholder="السعر (درهم)" class="w-1/2 bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
-                        <input type="number" id="new-service-duration" placeholder="المدة (دقيقة)" value="30" class="w-1/2 bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
+            <!-- القسم الأيسر: السلة الذكية وتأكيد الحجز -->
+            <div>
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-4 shadow-xl sticky top-4">
+                    <h2 class="text-sm font-bold text-purple-400 mb-4 flex items-center gap-2 border-b border-gray-800 pb-2">
+                        <i class="fa-solid fa-cart-shopping"></i> سلة الخدمات المختارة
+                    </h2>
+
+                    <!-- قائمة الخدمات المختارة ديناميكياً -->
+                    <div id="cart-items-list" class="text-xs text-gray-400 mb-4 min-h-[50px]">
+                        لم تقم بعد باختيار أي خدمة...
                     </div>
-                    <button onclick="addService()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold p-3 rounded-xl">إضافة خدمة جديدة</button>
-                </div>
-                <div id="services-list" class="space-y-2 max-h-40 overflow-y-auto no-scrollbar"></div>
-            </div>
 
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                <h3 class="text-xl font-bold mb-4 text-amber-400">إدارة المنتجات</h3>
-                <div class="space-y-3 mb-4">
-                    <input type="text" id="new-product-name" placeholder="اسم المنتج" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
-                    <div class="flex gap-2">
-                        <input type="number" id="new-product-price" placeholder="السعر (درهم)" class="w-1/2 bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
-                        <input type="number" id="new-product-stock" placeholder="المخزون" value="10" class="w-1/2 bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
+                    <div class="border-t border-gray-800 pt-3 space-y-2 mb-4 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">الوقت الإجمالي:</span>
+                            <span id="total-time" class="font-bold text-white">0 دقيقة</span>
+                        </div>
+                        <div class="flex justify-between text-base">
+                            <span class="text-gray-400 font-bold">السعر الإجمالي:</span>
+                            <span id="total-price" class="font-black text-purple-400">0 درهم</span>
+                        </div>
                     </div>
-                    <button onclick="addProduct()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold p-3 rounded-xl">إضافة منتج جديد</button>
-                </div>
-                <div id="products-list" class="space-y-2 max-h-40 overflow-y-auto no-scrollbar"></div>
-            </div>
 
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                <h3 class="text-xl font-bold mb-4 text-amber-400">🖨️ إعدادات رأس الفاتورة الحرارية</h3>
-                <div class="space-y-3">
-                    <input type="text" id="receipt-salon-name" placeholder="اسم الصالون" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
-                    <input type="text" id="receipt-salon-phone" placeholder="رقم الهاتف" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
-                    <input type="text" id="receipt-salon-address" placeholder="العنوان" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
-                    <button onclick="saveReceiptSettings()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold p-3 rounded-xl">حفظ إعدادات الفاتورة</button>
-                </div>
-            </div>
+                    <!-- نموذج بيانات الزبون -->
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1">اسمك الكريم</label>
+                            <input type="text" id="client-name" placeholder="أدخل اسمك الكامل" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-xs text-white focus:border-purple-500 outline-none">
+                        </div>
 
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                <h3 class="text-xl font-bold mb-4 text-amber-400">⚙️ إعدادات النظام</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm text-slate-300 mb-1">رابط Google Sheets Web App</label>
-                        <input type="text" id="sheets-url" placeholder="https://script.google.com/..." class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1">رقم الهاتف (مفعل بالواتساب)</label>
+                            <div class="flex items-center bg-gray-950 border border-gray-800 rounded-xl overflow-hidden">
+                                <span class="bg-gray-900 text-gray-400 px-3 py-2.5 text-xs font-bold border-l border-gray-800">+212</span>
+                                <input type="tel" id="client-phone" maxlength="9" placeholder="6xxxxxxxx" class="w-full bg-transparent p-2.5 text-xs text-white outline-none">
+                            </div>
+                        </div>
+
+                        <p class="text-[10px] text-gray-500 text-center">💡 تذكير: يمكنك حفظ الرابط للعودة للحجز السريع في أي وقت.</p>
+
+                        <button onclick="submitBooking()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition text-xs shadow-lg shadow-purple-600/30">
+                            <i class="fa-solid fa-paper-plane mr-1"></i> تأكيد وإرسال الحجز
+                        </button>
                     </div>
-                    <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-700">
-                        <span>مزامنة Google Sheets</span>
-                        <input type="checkbox" id="toggle-sheets" class="w-5 h-5 accent-amber-500">
-                    </div>
-                    <button onclick="saveSystemSettings()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold p-3 rounded-xl">حفظ الإعدادات</button>
+
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- الفوتر مع الزر الخفي لدخول الإدارة -->
+    <footer class="bg-gray-900 border-t border-gray-800 py-4 px-4 mt-12 text-center text-xs text-gray-500 flex justify-between items-center max-w-4xl mx-auto w-full">
+        <p>© 2026 Le Marquis Barbershop - All Rights Reserved.</p>
+        <!-- زر خفي آمن للإدارة والعمال -->
+        <button onclick="openAdminLogin()" class="text-gray-700 hover:text-purple-400 transition p-1" title="بوابة الإدارة">
+            <i class="fa-solid fa-lock text-xs"></i>
+        </button>
+    </footer>
+
+    <!-- نافذة تسجيل دخول الإدارة والعمال (مخفية افتراضياً) -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl relative">
+            <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-key text-purple-400"></i> تسجيل دخول الموظفين والإدارة
+            </h3>
+            <p class="text-[11px] text-gray-400 mb-4">أدخل معرف المستخدم والرمز السري (PIN)</p>
+            
+            <div class="space-y-3">
+                <input type="text" id="admin-user" placeholder="معرف المستخدم (مثال: admin أو amin)" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-xs text-white outline-none focus:border-purple-500">
+                <input type="password" id="admin-pin" maxlength="4" placeholder="الرمز السري (PIN)" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-xs text-white outline-none focus:border-purple-500">
+                
+                <div class="flex gap-2 pt-2">
+                    <button onclick="verifyAdmin()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded-xl text-xs transition">دخول</button>
+                    <button onclick="closeAdminLogin()" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-2 rounded-xl text-xs transition">إغلاق</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. بوابة دخول العمال -->
-    <div id="staff-login" class="hidden min-h-screen p-4 flex flex-col items-center justify-center">
-        <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl max-w-sm w-full text-center">
-            <button onclick="showScreen('main-portal')" class="mb-4 text-amber-400 hover:underline block text-right">← الرئيسية</button>
-            <h3 class="text-2xl font-bold mb-4 text-amber-400">بوابة العمال والحلاقين</h3>
-            <div class="space-y-4">
-                <select id="staff-select" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
-                    <option value="abdrahmane">Abdrahmane (رمز: 12)</option>
-                    <option value="ayoub">Ayoub (رمز: 34)</option>
-                    <option value="simo">Simo (رمز: 56)</option>
-                </select>
-                <input type="password" id="staff-pin-input" placeholder="الرمز السري (رقمين)" maxlength="2" class="w-full bg-slate-900 border border-slate-700 text-center text-xl tracking-widest p-3 rounded-xl text-white">
-                <button onclick="verifyStaffLogin()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold p-3 rounded-xl">دخول لوحة العامل</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- لوحة العامل الشخصية -->
-    <div id="staff-dashboard" class="hidden min-h-screen p-4 max-w-4xl mx-auto">
-        <div class="flex justify-between items-center mb-6 bg-slate-800 p-4 rounded-2xl border border-slate-700">
-            <h2 class="text-2xl font-bold text-amber-400" id="staff-welcome-title">مرحباً بالحلاق</h2>
-            <button onclick="showScreen('staff-login')" class="bg-slate-700 px-4 py-2 rounded-xl text-sm hover:bg-slate-600">تسجيل خروج</button>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 text-center">
-                <p class="text-slate-400 text-sm">زبائن اليوم</p>
-                <p class="text-3xl font-bold text-amber-400" id="staff-today-count">0</p>
-            </div>
-            <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 text-center">
-                <p class="text-slate-400 text-sm">أرباحي اليومية</p>
-                <p class="text-3xl font-bold text-emerald-400"><span id="staff-today-revenue">0</span> DH</p>
-            </div>
-            <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 flex items-center justify-center">
-                <button onclick="openWalkInModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl shadow-lg">⚡ تسجيل زبون بدون موعد</button>
-            </div>
-        </div>
-        <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-            <h3 class="text-xl font-bold mb-4 text-amber-400">جدول مواعيدي اليوم</h3>
-            <div id="staff-bookings-list" class="space-y-3"></div>
-        </div>
-    </div>
-
-    <!-- نافذة تسجيل زبون بدون موعد -->
-    <div id="walk-in-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl max-w-md w-full">
-            <h3 class="text-xl font-bold mb-4 text-amber-400">تسجيل زبون فوري (بدون موعد)</h3>
-            <div class="space-y-4">
-                <input type="text" id="walkin-client-name" placeholder="اسم الزبون (اختياري)" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white">
-                <select id="walkin-service" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white"></select>
-                <div class="flex gap-2">
-                    <button onclick="confirmWalkIn()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl">حجز وتأكيد الوقت</button>
-                    <button onclick="closeWalkInModal()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white p-3 rounded-xl">إلغاء</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 4. نقطة البيع (POS) -->
-    <div id="pos-screen" class="hidden min-h-screen p-4 max-w-6xl mx-auto">
-        <div class="flex justify-between items-center mb-4 bg-slate-800 p-4 rounded-2xl border border-slate-700">
-            <h2 class="text-2xl font-bold text-amber-400">💳 نقطة البيع (POS)</h2>
-            <div class="flex gap-2">
-                <button onclick="openDailyReport()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm">📊 تقرير اليوم (X Journée)</button>
-                <button onclick="showScreen('main-portal')" class="bg-slate-700 px-4 py-2 rounded-xl text-sm hover:bg-slate-600">الرئيسية</button>
-            </div>
-        </div>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 flex flex-col justify-between">
-                <div>
-                    <h3 class="text-lg font-bold mb-3 text-amber-400">السلة الحالية</h3>
-                    <div id="pos-cart-items" class="space-y-2 max-h-80 overflow-y-auto no-scrollbar mb-4">
-                        <p class="text-slate-500 text-center py-8">السلة فارغة</p>
-                    </div>
-                </div>
-                <div class="border-t border-slate-700 pt-4">
-                    <div class="flex justify-between text-xl font-bold mb-4">
-                        <span>الإجمالي:</span>
-                        <span id="pos-total-price" class="text-amber-400">0.00 DH</span>
-                    </div>
-                    <button onclick="completePosSale()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-4 rounded-xl shadow-lg">تأكيد وطباعة الإيصال 🖨️</button>
-                </div>
-            </div>
-
-            <div class="lg:col-span-2 bg-slate-800 p-4 rounded-2xl border border-slate-700">
-                <h3 class="text-lg font-bold mb-3 text-amber-400">الخدمات والمنتجات المتاحة</h3>
-                <div id="pos-catalog-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[500px] overflow-y-auto no-scrollbar"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة تقرير اليوم -->
-    <div id="daily-report-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl max-w-lg w-full">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-amber-400">📊 تقرير المبيعات اليومي (X Journée)</h3>
-                <button onclick="printDailyReport()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-1.5 rounded-xl font-bold text-sm">🖨️ طباعة التقرير</button>
-            </div>
-            <div id="report-content" class="space-y-3 bg-slate-900 p-4 rounded-xl border border-slate-700 mb-4"></div>
-            <button onclick="closeDailyReport()" class="w-full bg-slate-700 hover:bg-slate-600 text-white p-3 rounded-xl">إغلاق</button>
-        </div>
-    </div>
-
-    <!-- قالب الإيصال الحراري -->
-    <div id="printable-receipt" class="hidden p-4 bg-white text-black font-mono text-sm max-w-[300px] mx-auto">
-        <div class="text-center mb-2">
-            <h2 id="print-salon-name" class="font-bold text-lg">Dapcut Barbershop</h2>
-            <p id="print-salon-phone">Tel: +212 6 00 06 84 66</p>
-            <p id="print-salon-address" class="text-xs">Marrakech, Morocco</p>
-            <p class="text-xs border-b border-dashed border-black pb-1 my-1">--------------------------------</p>
-        </div>
-        <div class="mb-2">
-            <p>التاريخ: <span id="print-date"></span></p>
-            <p>الوقت: <span id="print-time"></span></p>
-        </div>
-        <div class="border-b border-dashed border-black pb-2 mb-2">
-            <table class="w-full text-right">
-                <thead>
-                    <tr class="border-b border-black">
-                        <th>الخدمة/المنتج</th>
-                        <th>السعر</th>
-                    </tr>
-                </thead>
-                <tbody id="print-items-body"></tbody>
-            </table>
-        </div>
-        <div class="flex justify-between font-bold text-base mb-4">
-            <span>الإجمالي:</span>
-            <span id="print-total-amount">0.00 DH</span>
-        </div>
-        <div class="text-center text-xs">
-            <p>شكراً لزيارتكم!</p>
-            <p>Dapcut Barbershop</p>
-        </div>
-    </div>
-
+    <!-- جافاسكريبت لتشغيل التفاعلات والسلة الذكية -->
     <script>
-        let db = {
-            services: JSON.parse(localStorage.getItem('salon_services')) || [
-                { id: 1, name: 'Shampoing cheveux', price: 20, duration: 15 },
-                { id: 2, name: 'Shampoing+Brushing', price: 40, duration: 20 },
-                { id: 3, name: 'Contour', price: 30, duration: 15 },
-                { id: 4, name: 'Coupe enfant', price: 50, duration: 30 },
-                { id: 5, name: 'Coupe gentlemen (Coupe+Brushing)', price: 70, duration: 30 },
-                { id: 6, name: 'Coupe Dapcut Special', price: 90, duration: 45 },
-                { id: 7, name: 'Epilation pommettes', price: 30, duration: 15 },
-                { id: 8, name: 'Classic (Rasage classic ou avec fil)', price: 40, duration: 30 },
-                { id: 9, name: 'Barbe Contour', price: 30, duration: 15 },
-                { id: 10, name: 'Spéciale sculptée', price: 50, duration: 30 },
-                { id: 11, name: 'Hydratation vapeur (Rasage+Hydratation+huile)', price: 70, duration: 30 },
-                { id: 12, name: 'Nez+Narines+Oreilles', price: 30, duration: 15 },
-                { id: 13, name: 'Visage Complet', price: 70, duration: 30 },
-                { id: 14, name: 'Soin nourrissant', price: 70, duration: 30 },
-                { id: 15, name: 'Défrissage', price: 120, duration: 45 },
-                { id: 16, name: 'Kératine', price: 300, duration: 60 },
-                { id: 17, name: 'Protéine Kératine', price: 500, duration: 60 },
-                { id: 18, name: 'Botox collagène', price: 700, duration: 60 },
-                { id: 19, name: 'Gommage naturel (Aloe-vera)', price: 40, duration: 20 },
-                { id: 20, name: 'Black mask (Gommage+Mask)', price: 100, duration: 30 },
-                { id: 21, name: 'Soin de visage (5 Produits)', price: 250, duration: 45 },
-                { id: 22, name: 'Colloration Barbe', price: 70, duration: 30 },
-                { id: 23, name: 'Colloration en noir', price: 150, duration: 45 },
-                { id: 24, name: 'Colloration autre couleur', price: 250, duration: 45 }
-            ],
-            products: JSON.parse(localStorage.getItem('salon_products')) || [
-                { id: 1, name: 'شامبو شعر خاص', price: 90, stock: 10 },
-                { id: 2, name: 'زيت لحية', price: 70, stock: 15 }
-            ],
-            staff: [
-                { id: 'abdrahmane', name: 'Abdrahmane', pin: '12' },
-                { id: 'ayoub', name: 'Ayoub', pin: '34' },
-                { id: 'simo', name: 'Simo', pin: '56' }
-            ],
-            bookings: JSON.parse(localStorage.getItem('salon_bookings')) || [],
-            settings: JSON.parse(localStorage.getItem('salon_settings')) || {
-                salonName: 'Dapcut Barbershop',
-                phone: '+212 6 00 06 84 66',
-                address: 'Marrakech, Morocco',
-                sheetsUrl: '',
-                sheetsEnabled: false
-            },
-            adminPin: localStorage.getItem('salon_admin_pin') || ''
-        };
+        let selectedStaffMember = "لم يتم التحديد";
 
-        let currentStaff = null;
-        let posCart = [];
-
-        function saveData() {
-            localStorage.setItem('salon_services', JSON.stringify(db.services));
-            localStorage.setItem('salon_products', JSON.stringify(db.products));
-            localStorage.setItem('salon_bookings', JSON.stringify(db.bookings));
-            localStorage.setItem('salon_settings', JSON.stringify(db.settings));
-            localStorage.setItem('salon_admin_pin', db.adminPin);
+        function selectStaff(staffName, element) {
+            document.querySelectorAll('.staff-card').forEach(card => card.classList.remove('selected-card'));
+            element.classList.add('selected-card');
+            selectedStaffMember = staffName;
         }
 
-        function showScreen(screenId) {
-            document.querySelectorAll('body > div:not(#admin-login-modal):not(#walk-in-modal):not(#daily-report-modal):not(#printable-receipt)').forEach(el => el.classList.add('hidden'));
-            document.getElementById(screenId).classList.remove('hidden');
-            if (screenId === 'client-booking') updateBookingDropdowns();
-            if (screenId === 'admin-dashboard') loadAdminDashboard();
-            if (screenId === 'pos-screen') loadPosCatalog();
-        }
+        function updateCart() {
+            const checkboxes = document.querySelectorAll('#services-container input[type="checkbox"]:checked');
+            const cartList = document.getElementById('cart-items-list');
+            const totalTimeEl = document.getElementById('total-time');
+            const totalPriceEl = document.getElementById('total-price');
 
-        function checkAdminAuth() {
-            document.getElementById('admin-login-modal').classList.remove('hidden');
-            if (!db.adminPin) {
-                document.getElementById('admin-pin-title').innerText = 'تعيين رمز المدير لأول مرة';
-                document.getElementById('admin-pin-desc').innerText = 'أدخل 4 أرقام جديدة لحماية لوحة التحكم';
-            } else {
-                document.getElementById('admin-pin-title').innerText = 'دخول المدير';
-                document.getElementById('admin-pin-desc').innerText = 'أدخل رمز الدخول المكون من 4 أرقام';
-            }
-        }
+            let totalPrice = 0;
+            let totalTime = 0;
+            let htmlContent = '';
 
-        function verifyAdminPin() {
-            const pin = document.getElementById('admin-pin-input').value;
-            if (!db.adminPin) {
-                if (pin.length === 4) {
-                    db.adminPin = pin;
-                    saveData();
-                    document.getElementById('admin-login-modal').classList.add('hidden');
-                    document.getElementById('admin-pin-input').value = '';
-                    showScreen('admin-dashboard');
-                } else {
-                    alert('يرجى إدخال 4 أرقام صحيحة');
-                }
-            } else {
-                if (pin === db.adminPin) {
-                    document.getElementById('admin-login-modal').classList.add('hidden');
-                    document.getElementById('admin-pin-input').value = '';
-                    showScreen('admin-dashboard');
-                } else {
-                    alert('الرمز السري غير صحيح');
-                }
-            }
-        }
-
-        function loadAdminDashboard() {
-            renderServicesList();
-            renderProductsList();
-            document.getElementById('receipt-salon-name').value = db.settings.salonName;
-            document.getElementById('receipt-salon-phone').value = db.settings.phone;
-            document.getElementById('receipt-salon-address').value = db.settings.address;
-            document.getElementById('sheets-url').value = db.settings.sheetsUrl;
-            document.getElementById('toggle-sheets').checked = db.settings.sheetsEnabled;
-        }
-
-        function addService() {
-            const name = document.getElementById('new-service-name').value;
-            const price = parseFloat(document.getElementById('new-service-price').value);
-            const duration = parseInt(document.getElementById('new-service-duration').value);
-            if (name && price) {
-                db.services.push({ id: Date.now(), name, price, duration });
-                saveData();
-                renderServicesList();
-                document.getElementById('new-service-name').value = '';
-                document.getElementById('new-service-price').value = '';
-            }
-        }
-
-        function renderServicesList() {
-            const container = document.getElementById('services-list');
-            container.innerHTML = db.services.map(s => `
-                <div class="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-700">
-                    <span>${s.name} - ${s.price} DH (${s.duration} دقيقة)</span>
-                    <button onclick="deleteService(${s.id})" class="text-rose-400 hover:underline text-sm">حذف</button>
-                </div>
-            `).join('');
-        }
-
-        function deleteService(id) {
-            db.services = db.services.filter(s => s.id !== id);
-            saveData();
-            renderServicesList();
-        }
-
-        function addProduct() {
-            const name = document.getElementById('new-product-name').value;
-            const price = parseFloat(document.getElementById('new-product-price').value);
-            const stock = parseInt(document.getElementById('new-product-stock').value);
-            if (name && price) {
-                db.products.push({ id: Date.now(), name, price, stock });
-                saveData();
-                renderProductsList();
-                document.getElementById('new-product-name').value = '';
-                document.getElementById('new-product-price').value = '';
-            }
-        }
-
-        function renderProductsList() {
-            const container = document.getElementById('products-list');
-            container.innerHTML = db.products.map(p => `
-                <div class="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-700">
-                    <span>${p.name} - ${p.price} DH (مخزون: ${p.stock})</span>
-                    <button onclick="deleteProduct(${p.id})" class="text-rose-400 hover:underline text-sm">حذف</button>
-                </div>
-            `).join('');
-        }
-
-        function deleteProduct(id) {
-            db.products = db.products.filter(p => p.id !== id);
-            saveData();
-            renderProductsList();
-        }
-
-        function saveReceiptSettings() {
-            db.settings.salonName = document.getElementById('receipt-salon-name').value;
-            db.settings.phone = document.getElementById('receipt-salon-phone').value;
-            db.settings.address = document.getElementById('receipt-salon-address').value;
-            saveData();
-            alert('تم حفظ إعدادات الفاتورة بنجاح');
-        }
-
-        function saveSystemSettings() {
-            db.settings.sheetsUrl = document.getElementById('sheets-url').value;
-            db.settings.sheetsEnabled = document.getElementById('toggle-sheets').checked;
-            saveData();
-            alert('تم حفظ إعدادات النظام بنجاح');
-        }
-
-        function updateBookingDropdowns() {
-            const sSelect = document.getElementById('booking-service');
-            sSelect.innerHTML = db.services.map(s => `<option value="${s.name}">${s.name} (${s.price} DH - ${s.duration} دقيقة)</option>`).join('');
-
-            const stSelect = document.getElementById('booking-staff');
-            stSelect.innerHTML = db.staff.map(st => `<option value="${st.id}">${st.name}</option>`).join('');
-        }
-
-        function submitBooking(e) {
-            e.preventDefault();
-            const name = document.getElementById('client-name').value;
-            const phone = '+212' + document.getElementById('client-phone').value;
-            const service = document.getElementById('booking-service').value;
-            const staffId = document.getElementById('booking-staff').value;
-            const time = document.getElementById('booking-time').value;
-
-            db.bookings.push({
-                id: Date.now(),
-                clientName: name,
-                clientPhone: phone,
-                service,
-                staffId,
-                time,
-                status: 'pending'
-            });
-
-            saveData();
-            alert('تم تسجيل حجزك بنجاح!');
-            document.getElementById('booking-form').reset();
-            showScreen('main-portal');
-        }
-
-        function verifyStaffLogin() {
-            const staffId = document.getElementById('staff-select').value;
-            const pin = document.getElementById('staff-pin-input').value;
-            const staffMember = db.staff.find(s => s.id === staffId && s.pin === pin);
-
-            if (staffMember) {
-                currentStaff = staffMember;
-                document.getElementById('staff-pin-input').value = '';
-                showScreen('staff-dashboard');
-                loadStaffDashboard();
-            } else {
-                alert('الرمز السري غير صحيح');
-            }
-        }
-
-        function loadStaffDashboard() {
-            document.getElementById('staff-welcome-title').innerText = `مرحباً الحلاق: ${currentStaff.name}`;
-            const staffBookings = db.bookings.filter(b => b.staffId === currentStaff.id);
-            
-            document.getElementById('staff-today-count').innerText = staffBookings.length;
-            const totalRev = staffBookings.reduce((acc, b) => {
-                const s = db.services.find(ser => ser.name === b.service);
-                return acc + (s ? s.price : 0);
-            }, 0);
-            document.getElementById('staff-today-revenue').innerText = totalRev;
-
-            const container = document.getElementById('staff-bookings-list');
-            if (staffBookings.length === 0) {
-                container.innerHTML = '<p class="text-slate-500">لا توجد مواعيد مسجلة حالياً.</p>';
+            if (checkboxes.length === 0) {
+                cartList.innerHTML = 'لم تقم بعد باختيار أي خدمة...';
+                totalTimeEl.textContent = '0 دقيقة';
+                totalPriceEl.textContent = '0 درهم';
                 return;
             }
 
-            container.innerHTML = staffBookings.map(b => `
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <div>
-                        <p class="font-bold text-amber-400">⏰ ${b.time} - ${b.clientName}</p>
-                        <p class="text-sm text-slate-300">الخدمة: ${b.service} | الهاتف: ${b.clientPhone}</p>
-                        <p class="text-xs text-slate-500">الحالة: ${b.status}</p>
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                        <a href="https://wa.me/${b.clientPhone.replace('+', '')}?text=مرحباً%20${encodeURIComponent(b.clientName)}،%20تم%20تأكيد%20موعدك%20لخدمة%20${encodeURIComponent(b.service)}%20على%20الساعة%20${b.time}.%20ننتظرك!" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold">💬 تأكيد (واتساب)</a>
-                        <a href="https://wa.me/${b.clientPhone.replace('+', '')}?text=مرحباً%20${encodeURIComponent(b.clientName)}،%20نذكرك%20بموعدك%20معنا%20خلال%2015%20دقيقة." target="_blank" class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold">🔔 تذكير (15 دقيقة)</a>
-                        <button onclick="updateBookingStatus(${b.id}, 'arrived')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-bold">✅ حضور</button>
-                        <button onclick="updateBookingStatus(${b.id}, 'noshow')" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold">❌ غياب</button>
-                    </div>
-                </div>
-            `).join('');
-        }
+            checkboxes.forEach(cb => {
+                const name = cb.value;
+                const price = parseInt(cb.dataset.price);
+                const time = parseInt(cb.dataset.time);
 
-        function updateBookingStatus(id, status) {
-            const b = db.bookings.find(item => item.id === id);
-            if (b) {
-                b.status = status;
-                saveData();
-                loadStaffDashboard();
-            }
-        }
+                totalPrice += price;
+                totalTime += time;
 
-        function openWalkInModal() {
-            const sSelect = document.getElementById('walkin-service');
-            sSelect.innerHTML = db.services.map(s => `<option value="${s.name}">${s.name} (${s.price} DH)</option>`).join('');
-            document.getElementById('walk-in-modal').classList.remove('hidden');
-        }
-
-        function closeWalkInModal() {
-            document.getElementById('walk-in-modal').classList.add('hidden');
-        }
-
-        function confirmWalkIn() {
-            const name = document.getElementById('walkin-client-name').value || 'زبون بدون موعد';
-            const service = document.getElementById('walkin-service').value;
-            const now = new Date();
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-            db.bookings.push({
-                id: Date.now(),
-                clientName: name,
-                clientPhone: '+212600000000',
-                service,
-                staffId: currentStaff.id,
-                time: timeStr,
-                status: 'arrived'
+                htmlContent += `<div class="flex justify-between items-center bg-gray-950/60 p-2 rounded-lg mb-1 border border-gray-800">
+                    <span class="text-white font-bold">${name}</span>
+                    <span class="text-purple-400">${price} درهم (${time} د)</span>
+                </div>`;
             });
-            saveData();
-            closeWalkInModal();
-            loadStaffDashboard();
-            alert('تم حجز التوقيت الفوري بنجاح!');
+
+            cartList.innerHTML = htmlContent;
+            totalTimeEl.textContent = totalTime + ' دقيقة';
+            totalPriceEl.textContent = totalPrice + ' درهم';
         }
 
-        function loadPosCatalog() {
-            const grid = document.getElementById('pos-catalog-grid');
-            let html = '';
-            db.services.forEach(s => {
-                html += `<button onclick="addToPosCart('${s.name}', ${s.price}, 'خدمة')" class="bg-slate-900 border border-slate-700 hover:border-amber-400 p-4 rounded-xl text-right transition">
-                    <p class="font-bold text-amber-400">${s.name}</p>
-                    <p class="text-sm text-slate-400">${s.price} DH</p>
-                </button>`;
-            });
-            db.products.forEach(p => {
-                html += `<button onclick="addToPosCart('${p.name}', ${p.price}, 'منتج')" class="bg-slate-900 border border-slate-700 hover:border-emerald-400 p-4 rounded-xl text-right transition">
-                    <p class="font-bold text-emerald-400">${p.name}</p>
-                    <p class="text-sm text-slate-400">${p.price} DH</p>
-                </button>`;
-            });
-            grid.innerHTML = html;
-        }
+        function submitBooking() {
+            const name = document.getElementById('client-name').value.trim();
+            const phone = document.getElementById('client-phone').value.trim();
+            const time = document.getElementById('appointment-time').value;
+            const checkboxes = document.querySelectorAll('#services-container input[type="checkbox"]:checked');
 
-        function addToPosCart(name, price, type) {
-            posCart.push({ name, price, type });
-            renderPosCart();
-        }
-
-        function renderPosCart() {
-            const container = document.getElementById('pos-cart-items');
-            if (posCart.length === 0) {
-                container.innerHTML = '<p class="text-slate-500 text-center py-8">السلة فارغة</p>';
-                document.getElementById('pos-total-price').innerText = '0.00 DH';
+            if (!name) {
+                alert('المرجو إدخال اسمك الكريم.');
                 return;
             }
-            container.innerHTML = posCart.map((item, index) => `
-                <div class="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-700">
-                    <div>
-                        <p class="font-bold text-white">${item.name}</p>
-                        <p class="text-xs text-slate-400">${item.type} - ${item.price} DH</p>
-                    </div>
-                    <button onclick="posCart.splice(${index}, 1); renderPosCart();" class="text-rose-400 text-sm">حذف</button>
-                </div>
-            `).join('');
-            const total = posCart.reduce((acc, i) => acc + i.price, 0);
-            document.getElementById('pos-total-price').innerText = total.toFixed(2) + ' DH';
-        }
-
-        function completePosSale() {
-            if (posCart.length === 0) {
-                alert('السلة فارغة');
+            if (phone.length < 9) {
+                alert('المرجو إدخال رقم هاتف صحيح مكون من 9 أرقام.');
                 return;
             }
-            printReceipt(posCart);
-            posCart = [];
-            renderPosCart();
-            alert('تمت عملية البيع بنجاح وطبع الإيصال!');
+            if (!time) {
+                alert('المرجو اختيار وقت الموعد المناسب.');
+                return;
+            }
+            if (checkboxes.length === 0) {
+                alert('المرجو اختيار خدمة واحدة على الأقل.');
+                return;
+            }
+
+            alert(`✅ مبروك يا ${name}! تم تسجيل حجزك بنجاح مع الحلاق (${selectedStaffMember}) على الساعة (${time}). سنرسل لك التأكيد عبر الواتساب.`);
         }
 
-        function printReceipt(items) {
-            document.getElementById('print-salon-name').innerText = db.settings.salonName;
-            document.getElementById('print-salon-phone').innerText = 'Tel: ' + db.settings.phone;
-            document.getElementById('print-salon-address').innerText = db.settings.address;
-            
-            const now = new Date();
-            document.getElementById('print-date').innerText = now.toLocaleDateString();
-            document.getElementById('print-time').innerText = now.toLocaleTimeString();
-
-            const tbody = document.getElementById('print-items-body');
-            tbody.innerHTML = items.map(i => `
-                <tr>
-                    <td>${i.name}</td>
-                    <td>${i.price} DH</td>
-                </tr>
-            `).join('');
-
-            const total = items.reduce((acc, i) => acc + i.price, 0);
-            document.getElementById('print-total-amount').innerText = total.toFixed(2) + ' DH';
-
-            window.print();
+        // دوال نافذة الإدارة المخفية
+        function openAdminLogin() {
+            document.getElementById('admin-modal').classList.remove('hidden');
+            document.getElementById('admin-modal').classList.add('flex');
         }
 
-        function openDailyReport() {
-            const modal = document.getElementById('daily-report-modal');
-            const content = document.getElementById('report-content');
-            
-            const totalRev = db.bookings.reduce((acc, b) => {
-                const s = db.services.find(ser => ser.name === b.service);
-                return acc + (s ? s.price : 0);
-            }, 0);
-
-            content.innerHTML = `
-                <div class="flex justify-between border-b border-slate-700 pb-2">
-                    <span>إجمالي الحجوزات المؤكدة:</span>
-                    <span class="font-bold text-amber-400">${db.bookings.length}</span>
-                </div>
-                <div class="flex justify-between border-b border-slate-700 pb-2">
-                    <span>إجمالي المداخيل التقريبية:</span>
-                    <span class="font-bold text-emerald-400">${totalRev} DH</span>
-                </div>
-                <div class="flex justify-between pb-2">
-                    <span>طريقة الدفع:</span>
-                    <span class="font-bold">نقداً (Espèces)</span>
-                </div>
-            `;
-            modal.classList.remove('hidden');
+        function closeAdminLogin() {
+            document.getElementById('admin-modal').classList.remove('flex');
+            document.getElementById('admin-modal').classList.add('hidden');
         }
 
-        function closeDailyReport() {
-            document.getElementById('daily-report-modal').classList.add('hidden');
+        function verifyAdmin() {
+            const user = document.getElementById('admin-user').value.trim();
+            const pin = document.getElementById('admin-pin').value.trim();
+
+            if (user === 'admin' && pin === '1234') {
+                alert('مرحباً بك في لوحة تحكم المدير الشاملة (سيتم ربطها في الخطوة القادمة)!');
+                closeAdminLogin();
+            } else {
+                alert('❌ المعرف أو الرمز السري غير صحيح.');
+            }
         }
 
-        function printDailyReport() {
-            printReceipt([{ name: 'تقرير مبيعات اليوم (X Journée)', price: 0 }]);
+        function changeLang(lang) {
+            alert(`تم التبديل إلى اللغة: ${lang.toUpperCase()} (سيتم تفعيل الترجمة الفورية في النسخة النهائية).`);
         }
     </script>
 </body>
